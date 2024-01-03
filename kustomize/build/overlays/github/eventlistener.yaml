@@ -1,0 +1,22 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: health-104-listener
+spec:
+  serviceAccountName: trigger-sa 
+  triggers:
+    - bindings:
+        - ref: health-104-trigger-binding
+      template:
+        ref: health-104-pipeline-template
+      interceptors:
+      - ref:
+          name: github
+          kind: ClusterInterceptor
+        params:
+        - name: "secretRef"
+          value:
+            secretName: github-webhook
+            secretKey: webhook_secret
+        - name: "eventTypes"
+          value: ["push"]
